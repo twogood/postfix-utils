@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+SITE=`basename $1`
+shift
+
+if [ -z "$SITE" ]; then
+	echo "Missing parameter: site" >&2
+	exit 1
+fi
+
+ETC_POSTFIX=/etc/postfix
+
+ENABLED_LINKNAME=$ETC_POSTFIX/virtual-enabled/$SITE
+
+rm -f "$ENABLED_LINKNAME"
+
+`dirname $0`/postfix-create-virtual
+

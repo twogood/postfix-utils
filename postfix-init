@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+ETC_POSTFIX=/etc/postfix
+VIRTUAL=$ETC_POSTFIX/virtual
+VIRTUAL_LOCAL=$ETC_POSTFIX/virtual.local
+mkdir -p $ETC_POSTFIX/virtual-available
+mkdir -p $ETC_POSTFIX/virtual-enabled
+if [ -f $VIRTUAL_LOCAL ]; then
+	echo "Notice: keeping existing $VIRTUAL_LOCAL"
+else
+	if [ -f $VIRTUAL ]; then
+		mv $VIRTUAL $VIRTUAL_LOCAL
+	fi
+fi
+`dirname $0`/postfix-create-virtual
+

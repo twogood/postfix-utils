@@ -1,0 +1,50 @@
+#!/bin/sh
+set -e 
+
+ETC_POSTFIX=/etc/postfix
+VIRTUAL="$ETC_POSTFIX/virtual"
+VIRTUAL_OLD="$ETC_POSTFIX/virtual.old"
+
+rm -f $VIRTUAL_OLD
+if [ -f $VIRTUAL ]; then
+	mv $VIRTUAL $VIRTUAL_OLD
+fi
+
+if [ -f $ETC_POSTFIX/virtual.local ]; then
+	cat $ETC_POSTFIX/virtual.local > $VIRTUAL
+else
+	rm -f $VIRTUAL
+fi
+
+if [ -f $ETC_POSTFIX/virtual_alias_domains.local ]; then
+	cat $ETC_POSTFIX/virtual_alias_domains.local > $ETC_POSTFIX/virtual_alias_domains
+else
+	rm -f $ETC_POSTFIX/virtual_alias_domains
+fi
+
+find $ETC_POSTFIX/virtual-enabled -type l | while read SITE_FILE; do
+	SITE=`basename $SITE_FILE`
+	cat >>$VIRTUAL <<EOF
+#
+# $SITE
+#
+abuse@$SITE root
+hostmaster@$SITE root
+postmaster@$SITE root
+webmaster@$SITE root
+EOF
+	awk -v SITE=$SITE '/^ *#/ { continue ; } $2 { print $1 "@" SITE " " $2; }' < $SITE_FILE >> $VIRTUAL
+	echo $SITE >> $ETC_POSTFIX/virtual_alias_domains
+done
+
+if postmap $VIRTUAL; then
+	:
+else
+	CODE=$?
+	if [ -f $VIRTUAL_OLD ]; then
+		mv $VIRTUAL_OLD $VIRTUAL
+	fi
+	exit $CODE
+fi
+
+

@@ -1,0 +1,25 @@
+#!/bin/sh
+set -e
+
+SITE=`basename $1`
+shift
+
+if [ -z "$SITE" ]; then
+	echo "Missing parameter: site" >&2
+	exit 1
+fi
+
+ETC_POSTFIX=/etc/postfix
+
+AVAILABLE_FILENAME=$ETC_POSTFIX/virtual-available/$SITE
+ENABLED_LINKNAME=$ETC_POSTFIX/virtual-enabled/$SITE
+
+if [ ! -f "$AVAILABLE_FILENAME" ]; then
+	echo "File not found: $AVAILABLE_FILENAME" >&2
+	exit 2
+fi
+
+ln -sf "$AVAILABLE_FILENAME" "$ENABLED_LINKNAME"
+
+`dirname $0`/postfix-create-virtual
+

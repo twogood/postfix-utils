@@ -1,0 +1,26 @@
+
+postfix-init: 
+
+	setup /etc/postfix/virtual-available/ and /etc/postfix/virtual-enabled/ (similar to Apache in Debian/Ubuntu)
+
+postfix-disable-site: 
+
+	similar to a2ensite in Debian/Ubuntu Apache
+
+
+postfix-enable-site: 
+
+	similar to a2dissite in Debian/Ubuntu Apache
+
+
+postfix-create-virtual: 
+
+	create /etc/postfix/virtual and /etc/postfix/virtual_alias_domains
+
+
+
+Each site file in /etc/postfix/virtual-available/ should have the same name as
+the domain name (e.g. virtual-alias.domain) and follow the format in
+http://www.postfix.org/virtual.5.html except that @virtual-alias.domain must be
+omitted.
+

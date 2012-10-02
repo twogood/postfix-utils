@@ -1,0 +1,12 @@
+#!/bin/sh
+ID="$1"
+
+if [ -z "$ID" ]; then
+	cat >&2 <<EOF
+Syntax:
+	$0 MAIL-IDENTIFIER
+EOF
+	exit 1
+fi
+
+find  /var/spool/postfix/ -name "$ID" |xargs rm
